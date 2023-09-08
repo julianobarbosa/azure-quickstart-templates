@@ -110,17 +110,24 @@ def render_bosh_manifest(settings):
     return bosh_director_ip
 
 def get_cloud_foundry_configuration(scenario, settings):
-    config = {}
-    for key in ["SUBNET_ADDRESS_RANGE_FOR_CLOUD_FOUNDRY", "VNET_NAME", "VNET_NAME_SECONDARY", "SUBNET_NAME_FOR_CLOUD_FOUNDRY", "CLOUD_FOUNDRY_PUBLIC_IP", "NSG_NAME_FOR_CLOUD_FOUNDRY"]:
-        config[key] = settings[key]
-
+    config = {
+        key: settings[key]
+        for key in [
+            "SUBNET_ADDRESS_RANGE_FOR_CLOUD_FOUNDRY",
+            "VNET_NAME",
+            "VNET_NAME_SECONDARY",
+            "SUBNET_NAME_FOR_CLOUD_FOUNDRY",
+            "CLOUD_FOUNDRY_PUBLIC_IP",
+            "NSG_NAME_FOR_CLOUD_FOUNDRY",
+        ]
+    }
     with open('cloudfoundry.cert', 'r') as tmpfile:
         ssl_cert = tmpfile.read()
     with open('cloudfoundry.key', 'r') as tmpfile:
         ssl_key = tmpfile.read()
     ssl_cert_and_key = "{0}{1}".format(ssl_cert, ssl_key)
     indentation = " " * 8
-    ssl_cert_and_key = ("\n"+indentation).join([line for line in ssl_cert_and_key.split('\n')])
+    ssl_cert_and_key = ("\n"+indentation).join(list(ssl_cert_and_key.split('\n')))
     config["SSL_CERT_AND_KEY"] = ssl_cert_and_key
 
     ip = netaddr.IPNetwork(settings['SUBNET_ADDRESS_RANGE_FOR_CLOUD_FOUNDRY'])
@@ -141,7 +148,7 @@ def get_cloud_foundry_configuration(scenario, settings):
     # Get and replace REPLACE_WITH_CLOUD_FOUNDRY_PUBLIC_IP_SECONDARY
     config["CLOUD_FOUNDRY_PUBLIC_IP_SECONDARY"] = settings["CLOUD_FOUNDRY_PUBLIC_IP_SECONDARY"]
     # Get and replace parameters related to storage account
-    
+
     config["STORAGE_ACCOUNT_NAME_PRIMARY"] = settings["STORAGE_ACCOUNT_NAME_PRIMARY"]
     config["STORAGE_ACCOUNT_NAME_SECONDARY"] = settings["STORAGE_ACCOUNT_NAME_SECONDARY"]
 
@@ -184,7 +191,7 @@ def render_cloud_foundry_deployment_cmd(settings):
             tmpfile.write(contents)
 
 def get_settings():
-    settings = dict()
+    settings = {}
     config_file = sys.argv[4]
     with open(config_file) as f:
         settings = json.load(f)["runtimeSettings"][0]["handlerSettings"]["publicSettings"]
