@@ -64,17 +64,13 @@ def train_model(params, num_boost_round, X_train, X_test, y_train, y_test):
     train_data = lgbm.Dataset(X_train, label=y_train)
     test_data = lgbm.Dataset(X_test, label=y_test)
 
-    # train model
-    model = lgbm.train(
+    return lgbm.train(
         params,
         train_data,
         num_boost_round=num_boost_round,
         valid_sets=[test_data],
         valid_names=["test"],
     )
-
-    # return model
-    return model
 
 
 def parse_args():
@@ -93,11 +89,7 @@ def parse_args():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--verbose", type=int, default=0)
 
-    # parse args
-    args = parser.parse_args()
-
-    # return args
-    return args
+    return parser.parse_args()
 
 
 # run script

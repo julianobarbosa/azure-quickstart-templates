@@ -27,7 +27,7 @@ def get_automation_runas_credential(runas_connection, resource_url, authority_ur
     tenant_id = runas_connection["TenantId"]
 
     # Authenticate with service principal certificate
-    authority_full_url = (authority_url + '/' + tenant_id)
+    authority_full_url = f'{authority_url}/{tenant_id}'
     context = adal.AuthenticationContext(authority_full_url)
     return azure_active_directory.AdalAuthentication(
         lambda: context.acquire_token_with_client_certificate(
